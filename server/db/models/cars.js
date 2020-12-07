@@ -29,6 +29,22 @@ const Cars = db.define(
       defaultValue: 'default.jpeg',
       allowNull: false,
     },
+    description: {
+      type: TEXT,
+      defaultValue: 'This is a nice car',
+    },
+    engine: {
+      type: STRING,
+      defaultValue: 'V8',
+    },
+    drive: {
+      type: STRING,
+      defaultValue: 'RWD',
+    },
+    feature1: {
+      type: STRING,
+      defaultValue: 'None',
+    },
   },
   { timestamps: false }
 );

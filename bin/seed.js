@@ -1,4 +1,4 @@
-const { Cars, CarDetails, CarImages } = require('../server/db/index');
+const { Cars, CarImages } = require('../server/db/index');
 
 const seed = async () => {
   try {
@@ -24,7 +24,7 @@ const seed = async () => {
         image: 'honda_civic.jpeg',
       }),
     ]);
-    await Promise.all(cars.map((car) => CarDetails.create({ carId: car.id })));
+    //await Promise.all(cars.map((car) => CarDetails.create({ carId: car.id })));
     await Promise.all(cars.map((car) => CarImages.create({ carId: car.id })));
   } catch (er) {
     console.log(er);

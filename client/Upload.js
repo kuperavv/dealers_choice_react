@@ -54,9 +54,9 @@ export default class Upload extends React.Component {
       .post('/api/uploadCarImage', formData, config)
       .then((response) => {})
       .catch((error) => {});
-    this.props.updateCars();
-    this.setState({ file: null, make: '', model: '', year: '', price: '' });
-    this.setState({ reset: Math.random().toString(36) });
+    this.updateCars();
+    this.setState({ car: emptyCar });
+    //this.setState({ reset: Math.random().toString(36) });
   }
 
   onChange(e) {
@@ -69,16 +69,22 @@ export default class Upload extends React.Component {
   render() {
     return (
       <form id="newCar" onSubmit={this.onFormSubmit}>
-        {Object.keys(carFields).map((fieldName) => {
+        {Object.keys(carFields).map((fieldName, idx) => {
           return (
-            <div className="form_item">
+            <div className="form_item" key={idx}>
               <span className="form_label">{fieldName.toUpperCase()}:</span>
               <input
                 className="input_item"
                 name={fieldName}
                 type="text"
                 placeholder={carFields[fieldName]}
-                value={this.state[fieldName]}
+                value={
+                  fieldName === 'image'
+                    ? this.state[fieldName].slice(
+                        this.state[fieldName].lastIndexOf('/') + 1
+                      )
+                    : this.state[fieldName]
+                }
                 onChange={this.onChangeText}
               />
             </div>
