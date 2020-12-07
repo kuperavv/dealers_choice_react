@@ -9,6 +9,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
+//API routes
 app.use('/api', require('./api'));
 
 // This middleware will catch any URLs resembling a file extension
@@ -24,7 +25,7 @@ app.get('/', (req, res, next) => {
   res.sendFile(path.join(__dirname, '..', 'client', 'index.html'));
 });
 
-// Error catching endware
+//Error catching endware
 app.use((err, req, res, next) => {
   console.error(err, typeof next);
   console.error(err.stack);

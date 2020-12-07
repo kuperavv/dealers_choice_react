@@ -1,3 +1,94 @@
-body {
-  color: green;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Cambria;
+}
+
+li {
+  list-style-type: none;
+  text-align: center;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+#header > a {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  padding: 1rem;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+#header > a:hover {
+  text-decoration: underline;
+}
+
+#main > #cars {
+  display: flex;
+  margin: auto;
+  justify-content: space-around;
+  max-width: 100vh;
+  flex-wrap: wrap;
+}
+
+.car_listing {
+  width: calc(100% / 3 - 2rem);
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+  padding: 1rem;
+  margin: 1rem;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+.car_listing > a {
+  width: 100%;
+}
+
+.car_listing > button {
+  align-self: center;
+  width: 2rem;
+}
+
+#upload_container {
+  max-width: 100vh;
+  margin: auto;
+  display: flex;
+  justify-content: space-around;
+}
+
+#newCar {
+  width: calc(100% / 1.5 - 2rem);
+  display: flex;
+  padding: 1rem;
+  justify-content: flex-start;
+  flex-direction: column;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+.form_item {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.input_item {
+  width: 80%;
+}
+
+.form_label {
+  width: 20%;
+}
+
+#upload_button {
+  margin-top: 1rem;
+  width: 30%;
+  align-self: center;
 }
