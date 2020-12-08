@@ -8,7 +8,8 @@
     "build": "webpack",
     "build:dev": "npm run build -- --watch --mode=development",
     "start:dev": "npm run build:dev & nodemon ./server/index --ignore dist/ --ignore src/",
-    "start:dev:seed": "npm run build:dev & SYNC=true nodemon ./server/index --ignore dist/ --ignore src/"
+    "start:dev:seed": "npm run build:dev & SYNC=true nodemon ./server/index --ignore dist/ --ignore src/",
+    "start": "SYNC=true node ./server"
   },
   "keywords": [],
   "author": "",
