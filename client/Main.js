@@ -27,6 +27,7 @@ export default class Main extends React.Component {
       id: '',
       car: {},
       reset: '',
+      tempCar: {},
     };
     this.updateCars = this.updateCars.bind(this);
     this.deleteCar = this.deleteCar.bind(this);
@@ -43,7 +44,7 @@ export default class Main extends React.Component {
       } else {
         car = (await axios.get(`/api/cars/${carId}`)).data;
       }
-      this.setState({ id: carId, car: car });
+      this.setState({ id: carId, car: { ...car }, tempCar: { ...car } });
     });
     const carId = window.location.hash.slice(1);
     let car;
@@ -53,8 +54,12 @@ export default class Main extends React.Component {
       car = (await axios.get(`/api/cars/${carId}`)).data;
     }
     const cars = (await axios.get(`/api/cars`)).data;
-    console.log(car);
-    this.setState({ cars: cars, id: carId, car: car });
+    this.setState({
+      cars: cars,
+      id: carId,
+      car: { ...car },
+      tempCar: { ...car },
+    });
   }
 
   async updateCars() {
@@ -63,50 +68,66 @@ export default class Main extends React.Component {
   }
 
   async deleteCar(carId) {
-    await axios.delete(`/api/${carId}`);
-    await this.updateCars();
+    try {
+      await axios.delete(`/api/${carId}`);
+      await this.updateCars();
+    } catch (er) {
+      alert('Unable to delete');
+    }
   }
 
   async onFormSubmit(e) {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('image', this.state.car.image);
-    formData.append('make', this.state.car.make);
-    formData.append('model', this.state.car.model);
-    formData.append('year', this.state.car.year);
-    formData.append('price', this.state.car.price);
-    formData.append('engine', this.state.car.engine);
-    formData.append('drive', this.state.car.drive);
-    formData.append('feature1', this.state.car.feature1);
-    formData.append('description', this.state.car.description);
+    formData.append('image', this.state.tempCar.image);
+    formData.append('make', this.state.tempCar.make);
+    formData.append('model', this.state.tempCar.model);
+    formData.append('year', this.state.tempCar.year);
+    formData.append('price', this.state.tempCar.price);
+    formData.append('engine', this.state.tempCar.engine);
+    formData.append('drive', this.state.tempCar.drive);
+    formData.append('feature1', this.state.tempCar.feature1);
+    formData.append('description', this.state.tempCar.description);
 
     const config = {
       headers: {
         'content-type': 'multipart/form-data',
       },
     };
-    await axios
-      .post('/api/uploadCarImage', formData, config)
-      .then((response) => {})
-      .catch((error) => {});
-    this.updateCars();
-    this.setState({ car: emptyCar });
-    this.setState({ reset: Math.random().toString(36) });
+    if (this.state.id === '') {
+      try {
+        await axios.post('/api/uploadCar', formData, config);
+        this.updateCars();
+        this.setState({ car: emptyCar, tempCar: emptyCar });
+        this.setState({ reset: Math.random().toString(36) });
+      } catch (er) {
+        alert('Unable to update');
+      }
+    } else {
+      try {
+        const car = (
+          await axios.put(`/api/updateCar/${this.state.id}`, formData, config)
+        ).data;
+        this.updateCars();
+        this.setState({ car: { ...car }, tempCar: { ...car } });
+      } catch (er) {
+        alert('Unable to update');
+      }
+    }
   }
 
   onChange(e) {
-    const car = this.state.car;
+    const car = this.state.tempCar;
     car.image = e.target.files[0];
-    console.log(car.image);
     this.setState({
-      car: car,
+      tempCar: car,
     });
   }
   onChangeText(e) {
-    const car = this.state.car;
+    const car = this.state.tempCar;
     car[e.target.name] = e.target.value;
     this.setState({
-      car: car,
+      tempCar: car,
     });
   }
 
@@ -120,10 +141,8 @@ export default class Main extends React.Component {
           <Cars cars={this.state.cars} deleteCar={this.deleteCar} />
         )}
         <div id="upload_container">
-          {/* {this.state.id !== '' ? '' : <Upload updateCars={this.updateCars} />} */}
-          {/* <Upload car={this.state.car} updateCars={this.updateCars} /> */}
           <Uploader
-            car={this.state.car}
+            car={this.state.tempCar}
             onChange={this.onChange}
             onChangeText={this.onChangeText}
             onFormSubmit={this.onFormSubmit}

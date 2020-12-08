@@ -3,7 +3,6 @@ import React from 'react';
 const Car = (props) => {
   return (
     <div id="car">
-      {console.log(props)}
       <ul>
         <li>
           <img

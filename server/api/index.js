@@ -24,33 +24,60 @@ const upload = multer({
   },
 });
 
-router.post(
-  '/uploadCarImage',
+router.post('/uploadCar', upload.single('image'), async (req, res, next) => {
+  const file = req.file;
+  if (!file) {
+    const error = new Error('Please upload a file');
+    error.httpStatusCode = 400;
+    return next(error);
+  }
+  const car = await Cars.create({
+    make: req.body.make,
+    model: req.body.model,
+    year: req.body.year,
+    price: req.body.price,
+    image: file.filename,
+    description: req.body.description,
+    engine: req.body.engine,
+    drive: req.body.drive,
+    feature1: req.body.feature1,
+  });
+  await CarImages.create({ carId: car.id });
+  return res.sendStatus(201).end();
+});
+
+router.put(
+  '/updateCar/:carId',
   upload.single('image'),
   async (req, res, next) => {
     const file = req.file;
-    if (!file) {
-      const error = new Error('Please upload a file');
-      error.httpStatusCode = 400;
-      return next(error);
-    }
-    const car = await Cars.create({
-      make: req.body.make,
-      model: req.body.model,
-      year: req.body.year,
-      price: req.body.price,
-      image: file.filename,
-      description: req.body.description,
-      engine: req.body.engine,
-      drive: req.body.drive,
-      feature1: req.body.feature1,
-    });
-    // await CarDetails.create({
 
-    //   carId: car.id,
-    // });
-    await CarImages.create({ carId: car.id });
-    return res.sendStatus(201).end();
+    const car = (
+      await Cars.findAll({
+        where: {
+          id: req.params.carId * 1,
+        },
+        include: [CarImages],
+      })
+    )[0];
+
+    if (file) {
+      fs.unlinkSync(
+        path.join(__dirname, '..', '..', 'public', 'images', car.image)
+      );
+      car.image = file.filename;
+    }
+
+    car.make = req.body.make;
+    car.model = req.body.model;
+    car.year = req.body.year;
+    car.price = req.body.price;
+    car.description = req.body.description;
+    car.engine = req.body.engine;
+    car.drive = req.body.drive;
+    car.feature1 = req.body.feature1;
+    await car.save();
+    return res.send(car);
   }
 );
 
@@ -68,7 +95,9 @@ router.post(
 
 router.get('/cars', async (req, res, next) => {
   try {
-    const cars = await Cars.findAll({});
+    const cars = await Cars.findAll({
+      order: ['id'],
+    });
     res.send(cars);
   } catch (er) {
     console.log(er);
@@ -87,12 +116,6 @@ router.get('/cars/:carid', async (req, res, next) => {
               exclude: ['carId', 'id'],
             },
           },
-          // {
-          //   model: CarDetails,
-          //   attributes: {
-          //     exclude: ['carId', 'id'],
-          //   },
-          // },
         ],
         where: {
           id: req.params.carid,
@@ -100,14 +123,6 @@ router.get('/cars/:carid', async (req, res, next) => {
       })
     )[0];
 
-    //car.dataValues.carImages = car.dataValues.carImages[0];
-    //console.log(car.dataValues.cardetails);
-    //car.dataValues.cardetails = car.dataValues.cardetails[0];
-    // car.dataValues.carImages.dataValues =
-    //   car.dataValues.carImages.dataValues[0];
-    // car.dataValues.carDetails.dataValues =
-    //   car.dataValues.carDetaisl.dataValues[0];
-    console.log(car);
     res.send(car);
   } catch (er) {
     console.log(er);
@@ -127,11 +142,6 @@ router.delete('/:carid', async (req, res, next) => {
     fs.unlinkSync(
       path.join(__dirname, '..', '..', 'public', 'images', imageName)
     );
-    // await CarDetails.destroy({
-    //   where: {
-    //     carId: req.params.carid,
-    //   },
-    // });
     await CarImages.destroy({
       where: {
         carId: req.params.carid,
