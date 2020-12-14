@@ -4,37 +4,20 @@ import Car from './Car';
 import Header from './Header';
 import Uploader from './Uploader';
 import axios from 'axios';
-
-const emptyCar = {
-  id: '',
-  image: '',
-  make: '',
-  model: '',
-  price: '',
-  year: '',
-  carImages: [],
-  description: '',
-  engine: '',
-  drive: '',
-  feature1: '',
-};
+import { emptyCar } from './store';
+import store from './store';
 
 export default class Main extends React.Component {
   constructor() {
     super();
-    this.state = {
-      cars: [],
-      id: '',
-      car: {},
-      reset: '',
-      tempCar: {},
-    };
+    this.state = store.getState();
     this.updateCars = this.updateCars.bind(this);
     this.deleteCar = this.deleteCar.bind(this);
     this.onChange = this.onChange.bind(this);
     this.onChangeText = this.onChangeText.bind(this);
     this.onFormSubmit = this.onFormSubmit.bind(this);
   }
+
   async componentDidMount() {
     window.addEventListener('hashchange', async () => {
       const carId = window.location.hash.slice(1);
