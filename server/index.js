@@ -24,7 +24,7 @@ app.use((req, res, next) => {
 app.get('/', (req, res, next) => {
   res.sendFile(path.join(__dirname, '..', 'client', 'index.html'));
 });
-
+//does this still work?
 //Error catching endware
 app.use((err, req, res, next) => {
   console.error(err, typeof next);
